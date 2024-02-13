@@ -21,17 +21,23 @@
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
+    "@liaoliaots/nestjs-redis": "^9.0.5",
+    "@nestjs-modules/mailer": "^1.10.3",
     "@nestjs/common": "^9.0.0",
     "@nestjs/config": "^3.2.0",
     "@nestjs/core": "^9.0.0",
+    "@nestjs/jwt": "^10.2.0",
     "@nestjs/platform-express": "^9.0.0",
+    "@nestjs/schedule": "^4.0.1",
     "@nestjs/swagger": "^7.3.0",
     "@prisma/client": "^5.9.1",
+    "argon2": "^0.31.2",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "helmet": "^7.1.0",
     "husky": "^9.0.10",
     "ioredis": "^5.3.2",
+    "nodemailer": "^6.9.9",
     "prisma": "^5.9.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0"
@@ -75,5 +81,9 @@
     ],
     "coverageDirectory": "../coverage",
     "testEnvironment": "node"
+  },
+  "resolutions": {
+    "wrap-ansi": "7.0.0",
+    "string-width": "4.1.0"
   }
 }

@@ -10,7 +10,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Test {
-  id    Int     @id @default(autoincrement())
+
+model User {
+  uuid              String             @id @default(uuid()) @db.VarChar(36)
+  phone             String?            @unique
+  email             String             @unique
+  roles             Role[]
+  sessions          Session[]
+  isPhoneVerified   Boolean            @default(false) @map("is_phone_verified")
+  isEmailVerified   Boolean            @default(false) @map("is_email_verified")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+
+  @@map("users")
+}
+
+model Session {
+  uuid               String              @id @default(uuid()) @db.VarChar(36)
+  user               User                @relation(fields: [userUUID], references: [uuid], onDelete: Cascade)
+  userUUID           String              @map("user_uuid") @db.VarChar(36)
+  deviceUUID         String              @unique @map("device_uuid") @db.VarChar(36)
+  refreshToken       String              @unique @map("refresh_token") @db.VarChar(200)
+  sessionAccessToken SessionAccessToken?
+  createdAt          DateTime            @default(now()) @map("created_at")
+  updatedAt          DateTime            @updatedAt @map("updated_at")
+  expiredAt          DateTime            @map("expired_at")
+
+  @@map("sessions")
+}
+
+model SessionAccessToken {
+  accessTokenUUID String   @unique @map("access_token_uuid") @db.VarChar(36)
+  sessionUUID     String?  @unique @map("session_uuid") @db.VarChar(36)
+  session         Session? @relation(fields: [sessionUUID], references: [uuid], onDelete: Cascade)
+  createdAt       DateTime @default(now()) @map("created_at")
+  expiredAt       DateTime @map("expired_at")
+
+  @@map("session_access_tokens")
+}
+
+model Role {
+  uuid     String @id @default(uuid()) @db.VarChar(36)
+  name     ERole  @default(BUSINESS)
+  userUUID String @map("user_uuid") @db.VarChar(36)
+  user     User   @relation(fields: [userUUID], references: [uuid], onDelete: Cascade)
+
+  @@map("roles")
+}
+
+enum ERole {
+  BUSINESS
+  ADMIN
+  MANAGER
 }
 

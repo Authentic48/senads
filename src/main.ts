@@ -5,7 +5,7 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { TransformInterceptor } from './libs/interceptors/transform.interceptor';
-import { ErrorFilter } from './libs/filters/error.filter';
+import { PrismaErrorFilter } from './libs/filters/prisma-error.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -17,7 +17,7 @@ async function bootstrap() {
     }),
   );
 
-  app.useGlobalFilters(new ErrorFilter());
+  app.useGlobalFilters(new PrismaErrorFilter());
 
   app.useGlobalInterceptors(new TransformInterceptor());
 

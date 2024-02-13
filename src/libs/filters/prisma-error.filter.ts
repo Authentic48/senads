@@ -1,36 +1,24 @@
 import {
   ArgumentsHost,
-  BadRequestException,
   ConflictException,
   ExceptionFilter,
-  ForbiddenException,
   HttpException,
   Logger,
   NotFoundException,
-  UnauthorizedException,
+  Catch,
 } from '@nestjs/common';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { Response } from 'express';
 
-export class ErrorFilter implements ExceptionFilter {
-  private readonly logger = new Logger(ErrorFilter.name);
-  catch(
-    exception: PrismaClientKnownRequestError | HttpException,
-    host: ArgumentsHost,
-  ): void {
+@Catch(PrismaClientKnownRequestError)
+export class PrismaErrorFilter implements ExceptionFilter {
+  private readonly logger = new Logger(PrismaErrorFilter.name);
+  catch(exception: PrismaClientKnownRequestError, host: ArgumentsHost): void {
     this.logger.error(exception.message);
 
     const response = host.switchToHttp().getResponse<Response>();
 
-    let nestException: BadRequestException = new BadRequestException(
-      'something_went_wrong',
-    );
-
-    if (exception instanceof ForbiddenException)
-      nestException = new ForbiddenException();
-
-    if (exception instanceof UnauthorizedException)
-      nestException = new ForbiddenException(exception.message);
+    let nestException: HttpException;
 
     if (
       exception instanceof PrismaClientKnownRequestError &&
