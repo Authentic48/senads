@@ -33,12 +33,11 @@ export class AuthService implements IAuth {
     );
   }
 
-  async generateOTP(email: string): Promise<{ success: boolean }> {
+  async generateOTP(email: string): Promise<void> {
     if (!(await this.otpService.canGenerateOTP(email)))
       throw new ForbiddenException('errors.try_again_after_a_minute');
     // without await
     this.otpService.saveAndSendOTP(email, this.otpService.generateOTP());
-    return { success: true };
   }
 
   async refresh(
@@ -147,7 +146,7 @@ export class AuthService implements IAuth {
     await this.otpService.deleteOTP(email);
   }
 
-  async logout(deviceUUID: string): Promise<{ success: boolean }> {
+  async logout(deviceUUID: string): Promise<void> {
     return await this.session.deleteSession(deviceUUID);
   }
 }

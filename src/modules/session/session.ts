@@ -13,7 +13,7 @@ export interface ISession {
     userUUID: string,
   ): Promise<void>;
 
-  deleteSession(deviceUUID: string): Promise<{ success: boolean }>;
+  deleteSession(deviceUUID: string): Promise<void>;
 
   updateSession(
     refreshToken: string,

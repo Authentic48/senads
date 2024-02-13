@@ -116,7 +116,7 @@ export class SessionService implements ISession {
     return { accessExpiredAt, refreshExpiredAt };
   }
 
-  async deleteSession(deviceUUID: string): Promise<{ success: boolean }> {
+  async deleteSession(deviceUUID: string): Promise<void> {
     const session = await this.prisma.session.delete({
       where: { deviceUUID },
       select: {
@@ -134,8 +134,6 @@ export class SessionService implements ISession {
         EJwtTokenTypes.REFRESH_TOKEN,
       ),
     ]);
-
-    return { success: true };
   }
 
   async updateSession(

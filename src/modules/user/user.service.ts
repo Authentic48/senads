@@ -4,6 +4,7 @@ import { PrismaService } from '../../libs/services/prisma.service';
 import { ERole } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IUserInfo } from '../../libs/interfaces/user.interface';
+import { ProfileDto } from './dtos/profile.dto';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -64,8 +65,8 @@ export class UserService implements IUserService {
 
     return {
       userUUID: userInfo.uuid,
-      roles,
       isEmailVerified: userInfo.isEmailVerified,
+      roles,
     };
   }
 
@@ -78,7 +79,9 @@ export class UserService implements IUserService {
       select: {
         uuid: true,
         roles: true,
+        email: true,
         isEmailVerified: true,
+        profile: true,
       },
     });
 
@@ -88,8 +91,36 @@ export class UserService implements IUserService {
 
     return {
       userUUID: userInfo.uuid,
-      roles,
       isEmailVerified: userInfo.isEmailVerified,
+      roles,
+      name: userInfo.profile?.name,
+      description: userInfo.profile?.description,
+      images: userInfo.profile?.images,
+      email: userInfo.email,
+      phone: userInfo.profile?.phone,
+      isPhoneVerified: userInfo.profile.isPhoneVerified,
     };
+  }
+
+  async updateUserProfile(
+    { name, images, phone, description }: ProfileDto,
+    userUUID: string,
+  ): Promise<void> {
+    await this.prisma.profile.upsert({
+      where: { userUUID },
+      update: {
+        name,
+        images,
+        phone,
+        description,
+      },
+      create: {
+        name,
+        images,
+        phone,
+        description,
+        userUUID,
+      },
+    });
   }
 }

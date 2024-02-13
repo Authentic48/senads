@@ -9,7 +9,7 @@ export interface IAuth {
     code: number,
   ): Promise<{ accessToken: string; refreshToken: string }>;
 
-  logout(deviceUUID: string): Promise<{ success: boolean }>;
+  logout(deviceUUID: string): Promise<void>;
 
   refresh(
     deviceUUID: string,
@@ -17,5 +17,5 @@ export interface IAuth {
     refreshToken: string,
   ): Promise<{ accessToken: string; refreshToken: string }>;
 
-  generateOTP(email: string): Promise<{ success: boolean }>;
+  generateOTP(email: string): Promise<void>;
 }

@@ -40,8 +40,10 @@ export class AuthController {
   })
   async generateOTP(
     @Body() { email }: SendOtpDto,
-  ): Promise<{ success: boolean }> {
-    return this.authService.generateOTP(email);
+  ): Promise<SuccessResponseDTO> {
+    await this.authService.generateOTP(email);
+
+    return new SuccessResponseDTO();
   }
   @HttpCode(HttpStatus.CREATED)
   @Post('register')
@@ -89,7 +91,9 @@ export class AuthController {
   async logout(
     @UserInfo() { deviceUUID }: IJWTPayload,
   ): Promise<SuccessResponseDTO> {
-    return this.authService.logout(deviceUUID);
+    await this.authService.logout(deviceUUID);
+
+    return new SuccessResponseDTO();
   }
 
   @HttpCode(HttpStatus.OK)

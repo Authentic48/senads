@@ -9,6 +9,12 @@ export interface IUserInfo {
   userUUID: string;
   roles: string[];
   isEmailVerified: boolean;
+  name?: string;
+  description?: string;
+  images?: string[];
+  phone?: string;
+  email?: string;
+  isPhoneVerified?: boolean;
 }
 
 import { EJwtTokenTypes } from '../utils/enum';
