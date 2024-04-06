@@ -1,13 +1,17 @@
 FROM node:18.12.1-bullseye-slim
+
 WORKDIR /app
-RUN apk add --no-cache libc6-compat
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    libc6-compat \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY package.json yarn.lock ./
+RUN yarn install
 
 COPY . .
-RUN yarn build
 
-COPY  /app/package.json ./package.json
-COPY  /app/node_modules ./node_modules
-COPY  /app/dist ./dist
+RUN yarn build
 
 EXPOSE 8080
 
