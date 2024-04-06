@@ -2,10 +2,8 @@ FROM node:18.12.1-bullseye-slim as build
 ARG STAGE=development
 WORKDIR /app
 COPY . .
-RUN cp -rf .deploy/$STAGE/.env . && \
-    yarn install --frozen-lockfile --production=true && \
-    yarn run build && \
-    rm -rf .deploy
+RUN yarn install --frozen-lockfile --production=true && \
+    yarn run build
 
 
 FROM node:18.12.1-bullseye-slim
