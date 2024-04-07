@@ -5,11 +5,7 @@ export const configSchema = Joi.object({
   APP_NAME: Joi.string().required(),
   APP_PORT: Joi.string().required(),
   // DB
-  POSTGRES_DB: Joi.string().required(),
-  POSTGRES_USER: Joi.string().required(),
-  POSTGRES_PASSWORD: Joi.string().required(),
-  POSTGRES_PORT: Joi.number().required(),
-  POSTGRES_HOST: Joi.string().required(),
+  DATABASE_URL: Joi.string().required(),
   // smtp
   TRANSPORT_NAME: Joi.string().required(),
   MAIL_HOST: Joi.string().required(),
