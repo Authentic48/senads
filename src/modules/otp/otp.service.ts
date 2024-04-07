@@ -49,7 +49,11 @@ export class OtpService implements IOtp {
   }
 
   async sendOTP(email: string, code: number): Promise<void> {
-    if (this.configService.get('NODE_ENV') === 'local') return;
+    if (
+      this.configService.get('NODE_ENV') === 'local' ||
+      this.configService.get('NODE_ENV') === 'stage'
+    )
+      return;
 
     await this.mailerSmtpService.sendMail({
       to: email,
