@@ -17,6 +17,7 @@ import { AuthMiddleware } from './libs/middlewares/auth.middleware';
 import { InternalJwtModule } from './modules/jwt/jwt.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AutoCleanerModule } from './modules/auto-cleaner/auto-cleaner.module';
+import { AdsModule } from './modules/ads/ads.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { AutoCleanerModule } from './modules/auto-cleaner/auto-cleaner.module';
     InternalJwtModule,
     AuthModule,
     AutoCleanerModule,
+    AdsModule,
     UserModule,
   ],
 })

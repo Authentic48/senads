@@ -69,6 +69,7 @@ model SubCategory {
   name         String   @unique
   categoryUUID String   @map("category_uuid") @db.VarChar(36)
   category     Category @relation(fields: [categoryUUID], references: [uuid], onDelete: Cascade)
+  ads          Ads[]
 
   @@map("sub_categories")
 }
@@ -82,10 +83,28 @@ model Profile {
   images          String[]
   userUUID        String   @unique @map("user_uuid") @db.VarChar(36)
   user            User     @relation(fields: [userUUID], references: [uuid], onDelete: Cascade)
+  ads             Ads[]
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
   @@map("profiles")
+}
+
+model Ads {
+  uuid            String      @id @default(uuid()) @db.VarChar(36)
+  title           String
+  images          String[]
+  description     String
+  price           Int?
+  address         String
+  subCategoryUUID String      @map("sub_category_uuid") @db.VarChar(36)
+  subCategory     SubCategory @relation(fields: [subCategoryUUID], references: [uuid], onDelete: Cascade)
+  profileUUID     String      @map("profile_uuid") @db.VarChar(36)
+  profile         Profile     @relation(fields: [profileUUID], references: [uuid], onDelete: Cascade)
+  createdAt       DateTime    @default(now()) @map("created_at")
+  updatedAt       DateTime    @updatedAt @map("updated_at")
+
+  @@map("ads")
 }
 
 enum ERole {
