@@ -9,10 +9,9 @@ import { MailerSmtpService } from '../../libs/services/mailer-smtp.service';
 @Injectable()
 export class OtpService implements IOtp {
   private readonly otpLifeTime: number;
-
   private readonly reSendOtpTime: number;
-
   private readonly defaultOtp: number;
+  private readonly ENV: string;
   constructor(
     private readonly configService: ConfigService,
     private readonly mailerSmtpService: MailerSmtpService,
@@ -21,6 +20,7 @@ export class OtpService implements IOtp {
     this.otpLifeTime = this.configService.get('OTP_LIFE_TIME');
     this.reSendOtpTime = this.configService.get('RESEND_OTP_LIFE_TIME');
     this.defaultOtp = parseInt(this.configService.get('DEFAULT_CODE'));
+    this.ENV = this.configService.get('NODE_ENV');
   }
 
   async saveAndSendOTP(email: string, code: number): Promise<void> {
@@ -49,11 +49,7 @@ export class OtpService implements IOtp {
   }
 
   async sendOTP(email: string, code: number): Promise<void> {
-    if (
-      this.configService.get('NODE_ENV') === 'local' ||
-      this.configService.get('NODE_ENV') === 'stage'
-    )
-      return;
+    if (['local', 'stage'].includes(this.ENV)) return;
 
     await this.mailerSmtpService.sendMail({
       to: email,
@@ -66,10 +62,7 @@ export class OtpService implements IOtp {
   }
 
   async verifyOTP(email: string, code: number): Promise<boolean> {
-    if (
-      this.configService.get('NODE_ENV') === 'local' &&
-      code === this.defaultOtp
-    ) {
+    if (['local', 'stage'].includes(this.ENV) && code === this.defaultOtp) {
       return true;
     }
     return Number(await this.redis.get(email)) === code;

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IUserInfo } from '../../../libs/interfaces/user.interface';
+import { SocialMediaDto } from './social-media.dto';
+import { UserWithProfileAndRoles } from '../../../libs/utils/type';
 
 export class UserDto {
   @ApiProperty()
@@ -23,13 +24,29 @@ export class UserDto {
   @ApiProperty()
   isPhoneVerified: boolean;
 
-  constructor(user: IUserInfo) {
+  @ApiProperty()
+  site: string;
+
+  @ApiProperty()
+  city: object;
+
+  @ApiProperty()
+  address: string;
+
+  @ApiProperty({ type: [SocialMediaDto] })
+  socialMedia: SocialMediaDto[];
+
+  constructor(user: UserWithProfileAndRoles) {
     this.email = user.email;
-    this.phone = user.phone;
-    this.name = user.name;
-    this.description = user.description;
+    this.phone = user.profile?.phone || null;
+    this.name = user.profile?.name || null;
+    this.description = user.profile?.description || null;
     this.isEmailVerified = user.isEmailVerified;
-    this.isPhoneVerified = user.isPhoneVerified;
-    this.images = user.images;
+    this.isPhoneVerified = user.profile?.isPhoneVerified;
+    this.images = user.profile?.images;
+    this.site = user.profile?.site || null;
+    this.socialMedia = user.profile?.profileSocialMedia || [];
+    this.address = user.profile?.address || null;
+    this.city = user.profile?.city || null;
   }
 }

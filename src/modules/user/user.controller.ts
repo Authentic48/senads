@@ -7,7 +7,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { IJWTPayload, IUserInfo } from '../../libs/interfaces/user.interface';
+import { IJWTPayload } from '../../libs/interfaces/user.interface';
 import {
   ApiHeader,
   ApiResponse,
@@ -20,8 +20,8 @@ import { UserDto } from './dtos/user.dto';
 import { ProfileDto } from './dtos/profile.dto';
 import { SuccessResponseDTO } from '../../libs/dtos/success-response.dto';
 
-@ApiTags('Users - Users Information')
-@Controller('user-info')
+@ApiTags('Profile - Users profile information')
+@Controller('profile')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -38,8 +38,10 @@ export class UserController {
     description: 'Successful',
     type: UserDto,
   })
-  async getUserInfo(@UserInfo() { userUUID }: IJWTPayload): Promise<IUserInfo> {
-    return this.userService.findUserByUUID(userUUID);
+  async getUserInfo(@UserInfo() { userUUID }: IJWTPayload): Promise<UserDto> {
+    const profile = await this.userService.findUserByUUID(userUUID);
+
+    return new UserDto(profile);
   }
 
   @Patch()

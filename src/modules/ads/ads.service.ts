@@ -89,10 +89,7 @@ export class AdsService implements IAds {
     { title, address, price, images, description }: UpdateAdDto,
     userUUID: string,
   ): Promise<void> {
-    const ad = await this.findAdByUUID(uuid);
-
-    if (ad.profileUUID != userUUID)
-      throw new ForbiddenException('ads.forbidden');
+    await this.checkAccess(uuid, userUUID);
 
     await this.prisma.ads.update({
       where: { uuid },
@@ -107,13 +104,17 @@ export class AdsService implements IAds {
   }
 
   async removeAd(uuid: string, userUUID: string): Promise<void> {
-    const ad = await this.findAdByUUID(uuid);
-
-    if (ad.profileUUID != userUUID)
-      throw new ForbiddenException('ads.forbidden');
+    await this.checkAccess(uuid, userUUID);
 
     await this.prisma.ads.delete({
       where: { uuid },
     });
+  }
+
+  private async checkAccess(uuid: string, userUUID: string) {
+    const ad = await this.findAdByUUID(uuid);
+
+    if (ad.profileUUID != userUUID)
+      throw new ForbiddenException('ads.forbidden');
   }
 }

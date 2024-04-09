@@ -3,8 +3,9 @@ import { IUserService } from './user';
 import { PrismaService } from '../../libs/services/prisma.service';
 import { ERole } from '@prisma/client';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
-import { IUserInfo } from '../../libs/interfaces/user.interface';
+import { IJWTPayload } from '../../libs/interfaces/user.interface';
 import { ProfileDto } from './dtos/profile.dto';
+import { UserWithProfileAndRoles } from '../../libs/utils/type';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -48,7 +49,7 @@ export class UserService implements IUserService {
     }
   }
 
-  async findUserByEmail(email: string): Promise<IUserInfo> {
+  async findUserByEmail(email: string): Promise<IJWTPayload> {
     const roles: string[] = [];
     const userInfo = await this.prisma.user.findUnique({
       where: { email },
@@ -59,20 +60,18 @@ export class UserService implements IUserService {
       },
     });
 
-    userInfo.roles.map((role) => {
+    userInfo?.roles?.map((role) => {
       roles.push(role.name);
     });
 
     return {
-      userUUID: userInfo.uuid,
-      isEmailVerified: userInfo.isEmailVerified,
+      userUUID: userInfo?.uuid,
       roles,
     };
   }
 
-  async findUserByUUID(userUUID: string): Promise<IUserInfo> {
-    const roles: string[] = [];
-    const userInfo = await this.prisma.user.findUniqueOrThrow({
+  async findUserByUUID(userUUID: string): Promise<UserWithProfileAndRoles> {
+    return this.prisma.user.findUnique({
       where: {
         uuid: userUUID,
       },
@@ -81,38 +80,56 @@ export class UserService implements IUserService {
         roles: true,
         email: true,
         isEmailVerified: true,
-        profile: true,
+        createdAt: true,
+        updatedAt: true,
+        profile: {
+          select: {
+            uuid: true,
+            name: true,
+            description: true,
+            images: true,
+            phone: true,
+            isPhoneVerified: true,
+            site: true,
+            profileSocialMedia: true,
+            address: true,
+            city: true,
+            userUUID: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
       },
     });
-
-    userInfo.roles.map((role) => {
-      roles.push(role.name);
-    });
-
-    return {
-      userUUID: userInfo.uuid,
-      isEmailVerified: userInfo.isEmailVerified,
-      roles,
-      name: userInfo.profile?.name,
-      description: userInfo.profile?.description,
-      images: userInfo.profile?.images,
-      email: userInfo.email,
-      phone: userInfo.profile?.phone,
-      isPhoneVerified: userInfo.profile.isPhoneVerified,
-    };
   }
 
   async updateUserProfile(
-    { name, images, phone, description }: ProfileDto,
+    {
+      name,
+      images,
+      phone,
+      description,
+      address,
+      site,
+      cityID,
+      socialMedia,
+    }: ProfileDto,
     userUUID: string,
   ): Promise<void> {
     await this.prisma.profile.upsert({
-      where: { userUUID },
+      where: { userUUID, uuid: userUUID },
       update: {
         name,
         images,
         phone,
         description,
+        site,
+        address,
+        city: {
+          connect: {
+            id: cityID,
+          },
+        },
       },
       create: {
         name,
@@ -120,6 +137,13 @@ export class UserService implements IUserService {
         phone,
         description,
         userUUID,
+        address,
+        site,
+        city: {
+          connect: {
+            id: cityID,
+          },
+        },
       },
     });
   }

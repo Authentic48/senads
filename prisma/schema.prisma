@@ -75,40 +75,105 @@ model SubCategory {
 }
 
 model Profile {
-  uuid            String   @id @default(uuid()) @db.VarChar(36)
-  name            String
-  description     String?
-  phone           String?  @unique
-  isPhoneVerified Boolean  @default(false) @map("is_phone_verified")
-  images          String[]
-  userUUID        String   @unique @map("user_uuid") @db.VarChar(36)
-  user            User     @relation(fields: [userUUID], references: [uuid], onDelete: Cascade)
-  ads             Ads[]
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  uuid               String               @id @default(uuid()) @db.VarChar(36)
+  name               String
+  description        String?
+  phone              String?              @unique
+  isPhoneVerified    Boolean              @default(false) @map("is_phone_verified")
+  site               String?
+  images             String[]
+  city               City?
+  address            String?
+  userUUID           String               @unique @map("user_uuid") @db.VarChar(36)
+  user               User                 @relation(fields: [userUUID], references: [uuid], onDelete: Cascade)
+  ads                Ads[]
+  profileSocialMedia ProfileSocialMedia[]
+  createdAt          DateTime             @default(now()) @map("created_at")
+  updatedAt          DateTime             @updatedAt @map("updated_at")
 
   @@map("profiles")
 }
 
 model Ads {
-  uuid            String      @id @default(uuid()) @db.VarChar(36)
-  title           String
-  images          String[]
-  description     String
-  price           Int?
-  address         String
-  subCategoryUUID String      @map("sub_category_uuid") @db.VarChar(36)
-  subCategory     SubCategory @relation(fields: [subCategoryUUID], references: [uuid], onDelete: Cascade)
-  profileUUID     String      @map("profile_uuid") @db.VarChar(36)
-  profile         Profile     @relation(fields: [profileUUID], references: [uuid], onDelete: Cascade)
-  createdAt       DateTime    @default(now()) @map("created_at")
-  updatedAt       DateTime    @updatedAt @map("updated_at")
+  uuid              String      @id @default(uuid()) @db.VarChar(36)
+  title             String
+  images            String[]
+  description       String
+  address           String?
+  price             Int?
+  conditions        ECondition?
+  features          String[]
+  brand             String?
+  year              String?
+  model             String?
+  isPriceNegotiable Boolean?    @default(false) @map("is_price_negotiable")
+  subCategoryUUID   String      @map("sub_category_uuid") @db.VarChar(36)
+  subCategory       SubCategory @relation(fields: [subCategoryUUID], references: [uuid], onDelete: Cascade)
+  profileUUID       String      @map("profile_uuid") @db.VarChar(36)
+  profile           Profile     @relation(fields: [profileUUID], references: [uuid], onDelete: Cascade)
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
+  city              City?
+  status            EAdStatus   @default(ACTIVE)
 
   @@map("ads")
+}
+
+model Region {
+  id     Int    @id
+  title  String
+  cities City[]
+
+  @@map("regions")
+}
+
+model City {
+  id          Int      @id
+  title       String
+  area        String?
+  regionID    Int?     @map("region_id")
+  region      Region?  @relation(fields: [regionID], references: [id], onDelete: Cascade)
+  profileUUID String?  @unique @map("profile_uuid") @db.VarChar(36)
+  profile     Profile? @relation(fields: [profileUUID], references: [uuid], onDelete: Cascade)
+  adUUID      String?  @unique @map("ad_uuid") @db.VarChar(36)
+  ad          Ads?     @relation(fields: [adUUID], references: [uuid], onDelete: Cascade)
+
+  @@map("cities")
+}
+
+model ProfileSocialMedia {
+  uuid        String           @id @default(uuid()) @db.VarChar(36)
+  network     ESocialMediaType
+  url         String
+  profileUUID String?          @map("profile_uuid") @db.VarChar(36)
+  profile     Profile?         @relation(fields: [profileUUID], references: [uuid], onDelete: Cascade)
+
+  @@unique([profileUUID, network])
+  @@map("profile_social_medias")
 }
 
 enum ERole {
   BUSINESS
   ADMIN
   MANAGER
+}
+
+enum ECondition {
+  NEW
+  USED
+}
+
+enum ESocialMediaType {
+  FACEBOOK
+  INSTAGRAM
+  LINKEDIN
+  TIKTOK
+  WHATSAPP
+  TELEGRAM
+  YT
+}
+
+enum EAdStatus {
+  ACTIVE
+  EXPIRED
 }

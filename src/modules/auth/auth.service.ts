@@ -114,7 +114,7 @@ export class AuthService implements IAuth {
 
     const user = await this.userService.findUserByEmail(email);
 
-    if (!user) {
+    if (!user.userUUID) {
       throw new UnauthorizedException('auth.invalid_credentials');
     }
 

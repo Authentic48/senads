@@ -124,16 +124,17 @@ export class SessionService implements ISession {
       },
     });
 
-    await Promise.all([
-      this.blackListToken(
-        session?.sessionAccessToken.accessTokenUUID,
-        EJwtTokenTypes.ACCESS_TOKEN,
-      ),
-      this.blackListToken(
-        session?.sessionAccessToken.accessTokenUUID,
-        EJwtTokenTypes.REFRESH_TOKEN,
-      ),
-    ]);
+    if (session.sessionAccessToken)
+      await Promise.all([
+        this.blackListToken(
+          session?.sessionAccessToken.accessTokenUUID,
+          EJwtTokenTypes.ACCESS_TOKEN,
+        ),
+        this.blackListToken(
+          session?.sessionAccessToken.accessTokenUUID,
+          EJwtTokenTypes.REFRESH_TOKEN,
+        ),
+      ]);
   }
 
   async updateSession(
