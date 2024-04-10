@@ -40,6 +40,9 @@ export class UserService implements IUserService {
         roles.push(role.name);
       });
 
+      // without await
+      this.createUserProfile(newUser.uuid);
+
       return { userUUID: newUser.uuid, roles };
     } catch (e: any) {
       this.logger.error(e.message);
@@ -93,12 +96,32 @@ export class UserService implements IUserService {
             site: true,
             profileSocialMedia: true,
             address: true,
-            city: true,
+            city: {
+              select: {
+                id: true,
+                title: true,
+                area: true,
+                region: true,
+                regionID: true,
+                profileUUID: true,
+                adUUID: true,
+              },
+            },
             userUUID: true,
             createdAt: true,
             updatedAt: true,
           },
         },
+      },
+    });
+  }
+
+  private async createUserProfile(userUUID: string): Promise<void> {
+    await this.prisma.profile.create({
+      data: {
+        uuid: userUUID,
+        name: ' ',
+        userUUID,
       },
     });
   }
@@ -116,35 +139,45 @@ export class UserService implements IUserService {
     }: ProfileDto,
     userUUID: string,
   ): Promise<void> {
-    await this.prisma.profile.upsert({
-      where: { userUUID, uuid: userUUID },
-      update: {
+    await this.prisma.profile.update({
+      where: { userUUID },
+      data: {
         name,
         images,
         phone,
         description,
         site,
         address,
-        city: {
-          connect: {
-            id: cityID,
-          },
-        },
-      },
-      create: {
-        name,
-        images,
-        phone,
-        description,
-        userUUID,
-        address,
-        site,
-        city: {
-          connect: {
-            id: cityID,
-          },
-        },
       },
     });
+
+    if (cityID) {
+      await this.prisma.profile.update({
+        where: {
+          userUUID,
+        },
+        data: {
+          city: {
+            connect: { id: cityID },
+          },
+        },
+      });
+    }
+
+    if (Array.isArray(socialMedia)) {
+      await this.prisma.profile.update({
+        where: {
+          userUUID,
+        },
+        data: {
+          profileSocialMedia: {
+            deleteMany: {},
+            createMany: {
+              data: socialMedia,
+            },
+          },
+        },
+      });
+    }
   }
 }

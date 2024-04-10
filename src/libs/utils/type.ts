@@ -6,7 +6,11 @@ const userWithProfileAndRoles = Prisma.validator<Prisma.UserDefaultArgs>()({
     profile: {
       include: {
         profileSocialMedia: true,
-        city: true,
+        city: {
+          include: {
+            region: true,
+          },
+        },
       },
     },
   },

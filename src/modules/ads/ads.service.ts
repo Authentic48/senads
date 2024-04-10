@@ -7,6 +7,7 @@ import { CreateAdDto } from './dto/create-ad.dto';
 import { UpdateAdDto } from './dto/update-ad.dto';
 import { PrismaService } from '../../libs/services/prisma.service';
 import { IAds } from './ads';
+import { AdQueryDto } from './dto/ad-query.dto';
 
 @Injectable()
 export class AdsService implements IAds {
@@ -36,10 +37,24 @@ export class AdsService implements IAds {
     });
   }
 
-  async findAllAds(subCategoryUUID?: string) {
+  async findAllAds({
+    subCategoryUUID,
+    categoryUUID,
+    regionID,
+    cityID,
+  }: AdQueryDto) {
     return this.prisma.ads.findMany({
       where: {
         subCategoryUUID,
+        subCategory: {
+          category: {
+            uuid: categoryUUID,
+          },
+        },
+        city: {
+          id: cityID,
+          regionID,
+        },
       },
       select: {
         uuid: true,

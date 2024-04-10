@@ -1,10 +1,11 @@
 import { CreateAdDto } from './dto/create-ad.dto';
 import { UpdateAdDto } from './dto/update-ad.dto';
+import { AdQueryDto } from './dto/ad-query.dto';
 
 export interface IAds {
   createAd(createAdDto: CreateAdDto, userUUID: string): Promise<void>;
 
-  findAllAds(categoryUUID?: string);
+  findAllAds(adQueryDto: AdQueryDto);
 
   findAdByUUID(uuid: string);
 

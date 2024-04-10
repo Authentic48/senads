@@ -17,12 +17,15 @@ import { AuthGuard } from '../../libs/guards/auth.guard';
 import {
   ApiHeader,
   ApiResponse,
+  ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { SuccessResponseDTO } from '../../libs/dtos/success-response.dto';
 import { UserInfo } from '../../libs/decorators/user-info.decorator';
 import { IJWTPayload } from '../../libs/interfaces/user.interface';
+import { AdQueryDto } from './dto/ad-query.dto';
 
+@ApiTags('Ads')
 @Controller('ads')
 export class AdsController {
   constructor(private readonly adsService: AdsService) {}
@@ -50,8 +53,8 @@ export class AdsController {
   }
 
   @Get()
-  async findAll(@Query() subCategoryUUID: string) {
-    return this.adsService.findAllAds(subCategoryUUID);
+  async findAll(@Query() adQueryDto: AdQueryDto) {
+    return this.adsService.findAllAds(adQueryDto);
   }
 
   @Get(':uuid')

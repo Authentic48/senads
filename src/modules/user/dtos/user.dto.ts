@@ -28,9 +28,6 @@ export class UserDto {
   site: string;
 
   @ApiProperty()
-  city: object;
-
-  @ApiProperty()
   address: string;
 
   @ApiProperty({ type: [SocialMediaDto] })
@@ -45,8 +42,13 @@ export class UserDto {
     this.isPhoneVerified = user.profile?.isPhoneVerified;
     this.images = user.profile?.images;
     this.site = user.profile?.site || null;
-    this.socialMedia = user.profile?.profileSocialMedia || [];
-    this.address = user.profile?.address || null;
-    this.city = user.profile?.city || null;
+    this.socialMedia =
+      user.profile?.profileSocialMedia.map((el) => ({
+        network: el.network,
+        url: el.url,
+      })) || null;
+    this.address = `${user.profile?.address ?? ''} ${
+      user.profile?.city?.title ?? ''
+    } ${user.profile?.city?.region?.title ?? ''}`;
   }
 }

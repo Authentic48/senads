@@ -2,12 +2,15 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   ArrayMinSize,
   IsArray,
+  IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
   IsUUID,
 } from 'class-validator';
+import { ECondition } from '@prisma/client';
 
 export class CreateAdDto {
   @ApiProperty()
@@ -27,9 +30,26 @@ export class CreateAdDto {
   images: string[];
 
   @ApiProperty()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  @ArrayMinSize(1)
+  features: string[];
+
+  @ApiProperty()
   @IsString()
-  @IsNotEmpty()
+  @IsOptional()
   address: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  brand: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  year: string;
 
   @ApiProperty()
   @IsNumber()
@@ -39,4 +59,14 @@ export class CreateAdDto {
   @ApiProperty()
   @IsUUID()
   subCategoryUUID: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsEnum(ECondition)
+  conditions: ECondition;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsBoolean()
+  isPriceNegotiable: boolean;
 }
