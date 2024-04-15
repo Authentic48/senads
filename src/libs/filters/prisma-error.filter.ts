@@ -34,6 +34,13 @@ export class PrismaErrorFilter implements ExceptionFilter {
       nestException = new NotFoundException('not_found');
     }
 
+    if (
+      exception instanceof PrismaClientKnownRequestError &&
+      exception.code === 'P2003'
+    ) {
+      nestException = new NotFoundException('related_field_not_found');
+    }
+
     response
       .status(nestException.getStatus())
       .json(nestException.getResponse());

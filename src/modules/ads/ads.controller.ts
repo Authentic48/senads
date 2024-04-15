@@ -16,6 +16,7 @@ import { UpdateAdDto } from './dto/update-ad.dto';
 import { AuthGuard } from '../../libs/guards/auth.guard';
 import {
   ApiHeader,
+  ApiNotFoundResponse,
   ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -24,8 +25,12 @@ import { SuccessResponseDTO } from '../../libs/dtos/success-response.dto';
 import { UserInfo } from '../../libs/decorators/user-info.decorator';
 import { IJWTPayload } from '../../libs/interfaces/user.interface';
 import { AdQueryDto } from './dto/ad-query.dto';
+import { RecommendedAdsDto } from './dto/recommended-ads.dto';
+import { PaginatedResponseDto } from '../../libs/dtos/paginated-response.dto';
+import { AdsDto } from './dto/ads.dto';
+import { AdDto } from './dto/ad.dto';
 
-@ApiTags('Ads')
+@ApiTags('Ads endpoints')
 @Controller('ads')
 export class AdsController {
   constructor(private readonly adsService: AdsService) {}
@@ -53,13 +58,39 @@ export class AdsController {
   }
 
   @Get()
-  async findAll(@Query() adQueryDto: AdQueryDto) {
-    return this.adsService.findAllAds(adQueryDto);
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successful',
+    type: AdsDto,
+    isArray: true,
+  })
+  async findAll(
+    @Query() adQueryDto: AdQueryDto,
+  ): Promise<PaginatedResponseDto<AdsDto>> {
+    const [count, result] = await this.adsService.findAllAds(adQueryDto);
+
+    const adDtoList = result.map((el) => new AdsDto(el));
+
+    return new PaginatedResponseDto({
+      count,
+      limit: adQueryDto.limit,
+      offset: adQueryDto.offset,
+      data: adDtoList,
+    });
   }
 
   @Get(':uuid')
+  @ApiNotFoundResponse({
+    description: 'NotFound',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successful',
+    type: AdDto,
+  })
   async findOne(@Param('uuid') uuid: string) {
-    return this.adsService.findAdByUUID(uuid);
+    const ad = await this.adsService.findAdByUUID(uuid);
+    return new AdDto(ad);
   }
 
   @Patch(':uuid')
@@ -105,5 +136,21 @@ export class AdsController {
     await this.adsService.removeAd(uuid, userUUID);
 
     return new SuccessResponseDTO();
+  }
+
+  @Get(':uuid/recommendations')
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successful',
+    type: AdsDto,
+    isArray: true,
+  })
+  async getRecommendedAds(
+    @Param('uuid') uuid: string,
+    @Query() data: RecommendedAdsDto,
+  ): Promise<AdsDto[]> {
+    const result = await this.adsService.getRecommendedAds(uuid, data);
+
+    return result.map((el) => new AdsDto(el));
   }
 }

@@ -26,4 +26,11 @@ export const configSchema = Joi.object({
   ACCESS_TOKEN_LIFE_TIME: Joi.number().required(),
   REFRESH_TOKEN_LIFE_TIME: Joi.number().required(),
   VERIFY_OTP_TOKEN_LIFE_TIME: Joi.number().required(),
+
+  // S3 bucket
+  BUCKET_NAME: Joi.string().required(),
+  ACCESS_KEY: Joi.string().required(),
+  SECRET_KEY: Joi.string().required(),
+  REGION: Joi.string().required(),
+  BUCKET_ENDPOINT: Joi.string().required(),
 });

@@ -1,8 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNumber, IsOptional, IsString } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { PaginatedRequestDto } from '../../../libs/dtos/paginated-request.dto';
 
-export class AdQueryDto {
+export class AdQueryDto extends PaginatedRequestDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
@@ -12,6 +13,11 @@ export class AdQueryDto {
   @IsOptional()
   @IsString()
   categoryUUID: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
+  profileUUID: string;
 
   @ApiProperty()
   @IsOptional()

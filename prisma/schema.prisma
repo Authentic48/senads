@@ -120,7 +120,7 @@ model Ads {
 }
 
 model Region {
-  id     Int    @id
+  id     Int    @id @default(autoincrement())
   title  String
   cities City[]
 
@@ -128,7 +128,7 @@ model Region {
 }
 
 model City {
-  id          Int      @id
+  id          Int      @id @default(autoincrement())
   title       String
   area        String?
   regionID    Int?     @map("region_id")

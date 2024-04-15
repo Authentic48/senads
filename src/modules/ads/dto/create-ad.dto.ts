@@ -49,6 +49,11 @@ export class CreateAdDto {
   @ApiProperty()
   @IsString()
   @IsOptional()
+  model: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
   year: string;
 
   @ApiProperty()

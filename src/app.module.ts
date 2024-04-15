@@ -18,6 +18,11 @@ import { InternalJwtModule } from './modules/jwt/jwt.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AutoCleanerModule } from './modules/auto-cleaner/auto-cleaner.module';
 import { AdsModule } from './modules/ads/ads.module';
+import { CategoriesModule } from './modules/categories/categories.module';
+import { SubCategoriesModule } from './modules/sub-categories/sub-categories.module';
+import { RegionsModule } from './modules/regions/regions.module';
+import { CitiesModule } from './modules/cities/cities.module';
+import { FilesModule } from './modules/files/files.module';
 
 @Module({
   imports: [
@@ -38,6 +43,11 @@ import { AdsModule } from './modules/ads/ads.module';
     AuthModule,
     AutoCleanerModule,
     AdsModule,
+    CategoriesModule,
+    CitiesModule,
+    FilesModule,
+    RegionsModule,
+    SubCategoriesModule,
     UserModule,
   ],
 })

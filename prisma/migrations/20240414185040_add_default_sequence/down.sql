@@ -1,0 +1,7 @@
+-- AlterTable
+ALTER TABLE "regions" ALTER COLUMN "id" DROP DEFAULT;
+DROP SEQUENCE "";
+
+-- AlterTable
+ALTER TABLE "cities" ALTER COLUMN "id" DROP DEFAULT;
+DROP SEQUENCE "";

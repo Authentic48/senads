@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Patch,
   UseGuards,
 } from '@nestjs/common';
@@ -10,6 +11,7 @@ import { UserService } from './user.service';
 import { IJWTPayload } from '../../libs/interfaces/user.interface';
 import {
   ApiHeader,
+  ApiNotFoundResponse,
   ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -19,6 +21,7 @@ import { UserInfo } from '../../libs/decorators/user-info.decorator';
 import { UserDto } from './dtos/user.dto';
 import { ProfileDto } from './dtos/profile.dto';
 import { SuccessResponseDTO } from '../../libs/dtos/success-response.dto';
+import { PublicProfileDto } from '../../libs/dtos/public-profile.dto';
 
 @ApiTags('Profile - Users profile information')
 @Controller('profile')
@@ -64,5 +67,22 @@ export class UserController {
     await this.userService.updateUserProfile(data, userUUID);
 
     return new SuccessResponseDTO();
+  }
+
+  @Get(':uuid')
+  @ApiNotFoundResponse({
+    description: 'NotFound',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Successful',
+    type: PublicProfileDto,
+  })
+  async getProfileByUUID(
+    @Param('uuid') uuid: string,
+  ): Promise<PublicProfileDto> {
+    const profile = await this.userService.getProfileByUUID(uuid);
+
+    return new PublicProfileDto(profile);
   }
 }

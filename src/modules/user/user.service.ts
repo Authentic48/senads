@@ -1,4 +1,9 @@
-import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import {
+  Injectable,
+  Logger,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { IUserService } from './user';
 import { PrismaService } from '../../libs/services/prisma.service';
 import { ERole } from '@prisma/client';
@@ -6,6 +11,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/library';
 import { IJWTPayload } from '../../libs/interfaces/user.interface';
 import { ProfileDto } from './dtos/profile.dto';
 import { UserWithProfileAndRoles } from '../../libs/utils/type';
+import { IPublicProfile } from '../../libs/interfaces/ad.interface';
 
 @Injectable()
 export class UserService implements IUserService {
@@ -179,5 +185,28 @@ export class UserService implements IUserService {
         },
       });
     }
+  }
+
+  async getProfileByUUID(uuid: string): Promise<IPublicProfile> {
+    const profile = await this.prisma.profile.findUnique({
+      where: { uuid },
+      include: {
+        profileSocialMedia: true,
+        user: {
+          select: {
+            email: true,
+          },
+        },
+        _count: {
+          select: {
+            ads: true,
+          },
+        },
+      },
+    });
+
+    if (!profile) throw new NotFoundException('profile.not_found');
+
+    return profile;
   }
 }
