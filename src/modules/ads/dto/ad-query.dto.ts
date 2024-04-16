@@ -12,6 +12,11 @@ export class AdQueryDto extends PaginatedRequestDto {
   @ApiProperty()
   @IsOptional()
   @IsString()
+  text: string;
+
+  @ApiProperty()
+  @IsOptional()
+  @IsString()
   categoryUUID: string;
 
   @ApiProperty()

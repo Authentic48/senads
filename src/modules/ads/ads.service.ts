@@ -59,6 +59,7 @@ export class AdsService implements IAds {
     cityID,
     offset,
     limit,
+    text,
     profileUUID,
   }: AdQueryDto): Promise<[number, IGetAds[]]> {
     const query: Prisma.AdsFindManyArgs = {
@@ -74,6 +75,38 @@ export class AdsService implements IAds {
           regionID,
         },
         profileUUID,
+        OR: [
+          {
+            title: {
+              contains: text,
+              mode: 'insensitive',
+            },
+          },
+          {
+            description: {
+              contains: text,
+              mode: 'insensitive',
+            },
+          },
+          {
+            subCategory: {
+              name: {
+                contains: text,
+                mode: 'insensitive',
+              },
+            },
+          },
+          {
+            subCategory: {
+              category: {
+                name: {
+                  contains: text,
+                  mode: 'insensitive',
+                },
+              },
+            },
+          },
+        ],
       },
       take: limit,
       skip: offset,
